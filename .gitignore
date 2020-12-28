@@ -1,0 +1,4 @@
+sentiment_analyzer/__pycache__
+sentiment_analyzer/classifier/__pycache__
+assets/model_state_dict.bin
+
