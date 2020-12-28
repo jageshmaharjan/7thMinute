@@ -2,3 +2,4 @@ fastapi
 pydantic
 torch
 transformers
+uvicorn
