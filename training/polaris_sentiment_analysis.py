@@ -1,6 +1,7 @@
 from collections import defaultdict
 
 # import tensorflow as tf
+import argparse
 import torch
 from sklearn.model_selection import train_test_split
 from torch import nn
@@ -25,7 +26,7 @@ class PolarisSubtitleData(Dataset):
         subtitles = str(self.subtitles[item])
         target = self.targets[item]
 
-        encoding = self.tokenizer.encoded_plus(
+        encoding = self.tokenizer.encode_plus(
             subtitles,
             add_special_tokens=True,
             max_length = self.max_len,
@@ -37,8 +38,8 @@ class PolarisSubtitleData(Dataset):
 
         return {
             'subtitle_text': subtitles,
-            'input_ids': encoding['input_ids'].flatten(),
-            'attention_mask': encoding['attention_mask'].flatten(),
+            'input_ids': encoding['input_ids'], #.flatten(),
+            'attention_mask': encoding['attention_mask'], #.flatten(),
             'targets': torch.tensor(target, dtype=torch.long)
         }
 
@@ -46,7 +47,7 @@ class PolarisSubtitleData(Dataset):
 def create_data_loader(df, tokenizer, max_len, batch_size):
     ds = PolarisSubtitleData(
         subtitles=df.content.to_numpy(),
-        targets=df.sentitmet.to_numpy(),
+        targets=df.sentiment.to_numpy(),
         tokenizer=tokenizer,
         max_len=max_len
     )
@@ -56,7 +57,7 @@ def create_data_loader(df, tokenizer, max_len, batch_size):
 class SentimentClassifier(nn.Module):
     def __init__(self, n_classes):
         super(SentimentClassifier, self).__init__()
-        self.bert = BertModel.from_pretrained('')
+        self.bert = BertModel.from_pretrained('bert-base-cased')
         self.drop = nn.Dropout(p=0.3)
         self.out = nn.Linear(self.bert.config.hidden_size, n_classes)
 
@@ -75,9 +76,9 @@ def train_epoch(model, data_loader, loss_fn, optimizer, device, scheduler, n_exa
     correct_predictions = 0
 
     for d in data_loader:
-        input_ids = d["input_ids"].to(device)
-        attention_mask = d["attention_mask"].to(device)
-        targets = d["targets"].to(device)
+        input_ids = d["input_ids"] #.to(device)
+        attention_mask = d["attention_mask"] #.to(device)
+        targets = d["targets"] #.to(device)
 
         outputs = model(input_ids=input_ids, attention_mask=attention_mask)
 
@@ -120,18 +121,38 @@ def eval_model(model, data_loader, loss_fn, device, n_examples):
     return correct_predictions.double() / n_examples, np.mean(losses)
 
 
-def main():
+def to_sentiment(rating):
+    rating = int(rating)
+    if rating <= 2:
+        return 0
+    elif rating == 3:
+        return 1
+    else:
+        return 2
+
+
+def main(args):
     RANDOM_SEED = 12345
     BATCH_SIZE = 16
     EPOCHS = 10
     MAX_LEN = 160
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-    df = pd.read_csv("polaris_sentiment.csv")
-    df.head()
+    df = pd.read_csv(args.train_data)
+    print(df.head())
+    print(df.info())
+
+    df['sentiment'] = df.score.apply(to_sentiment)
+
     class_names = ["negative", "neutral", "positive"]
+
     PRE_TRAINED_MODEL_NAME = 'bert-base-cased'
     tokenizer = BertTokenizer.from_pretrained(PRE_TRAINED_MODEL_NAME)
+
+    # token_lens = []
+    # for txt in df.content:
+    #     tokens = tokenizer.encode(txt, max_length=512)
+    #     token_lens.append(len(tokens))
 
     df_train, df_test = train_test_split(df, test_size=0.15, random_state=RANDOM_SEED)
     df_val, df_test = train_test_split(df_test, test_size=0.5, random_state=RANDOM_SEED)
@@ -185,4 +206,7 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser("arguments for polaris sentiment")
+    parser.add_argument('--train_data', help="train data (csv) file path", type=str)
+    args = parser.parse_args()
+    main(args)
