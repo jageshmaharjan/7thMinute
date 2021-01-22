@@ -2,6 +2,7 @@ import argparse
 import pandas as pd
 import numpy as np
 from tqdm import tqdm, trange
+import json
 
 import torch
 from torch.utils.data import TensorDataset, DataLoader, RandomSampler, SequentialSampler
@@ -48,7 +49,11 @@ def toknize_and_preserve_labels(tokenizer, sentence, text_labels):
 def predict(tokenizer, model, tag_values):
     test_sent = "President Biden will be inagurating this noon in Pensylvenia avenue, WA at Capitol Hill"
     tokenized_sent = tokenizer.encode(test_sent)
-    input_ids = torch.tensor([tokenized_sent]).cuda()
+
+    if torch.cuda.is_available():
+        input_ids = torch.tensor([tokenized_sent]).cuda()
+    else:
+        input_ids = torch.tensor([tokenized_sent])
 
     with torch.no_grad():
         output = model(input_ids)
@@ -85,6 +90,15 @@ def main(args):
     tag_values = list(set(data['Tag'].values))
     tag_values.append("PAD")
     tag2idx = {t: i for i, t in enumerate(tag_values)}
+
+    with open("tag_values.txt", 'w+') as f_tag_val:
+        for val in tag_values:
+            f_tag_val.write(val + '\n')
+    f_tag_val.close()
+
+    with open("tag2idx.json", 'w+') as f_taf2idx:
+        json.dump(tag2idx, f_taf2idx)
+    f_taf2idx.close()
 
     MAX_LEN = 92
     BATCH_SIZE = 32
@@ -136,7 +150,8 @@ def main(args):
                                                        output_attentions=False,
                                                        output_hidden_states=False)
 
-    model.cuda()
+    if torch.cuda.is_available():
+        model.cuda()
 
     FULL_FINETUNING = True
     if FULL_FINETUNING:
@@ -216,7 +231,7 @@ def main(args):
         print("Valid Acc: {}".format(f1_score(pred_tags, valid_tags)))
 
     import time
-    model_name = "polaris_sentiment_model" + str(time.time()) + ".bin"
+    model_name = "polaris_ER_model" + str(time.time()) + ".bin"
     torch.save(model.state_dict(), model_name)
 
     predict(tokenizer, model, tag_values)
