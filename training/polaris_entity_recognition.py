@@ -48,7 +48,7 @@ def toknize_and_preserve_labels(tokenizer, sentence, text_labels):
 def predict(tokenizer, model, tag_values):
     test_sent = "President Biden will be inagurating this noon in Pensylvenia avenue, WA at Capitol Hill"
     tokenized_sent = tokenizer.encode(test_sent)
-    input_ids = torch.tensor([tokenized_sent])  # .cuda()
+    input_ids = torch.tensor([tokenized_sent]).cuda()
 
     with torch.no_grad():
         output = model(input_ids)
@@ -69,12 +69,12 @@ def predict(tokenizer, model, tag_values):
 
 
 def main(args):
-    data = pd.read_csv('/datadisk/7thMinute/resources/ner_dataset.csv',
+    data = pd.read_csv('/home/ubuntu/7thmin/webservice/resources/ner_dataset.csv',
                        encoding='latin1').fillna(method='ffill')
 
     print(data.head())
 
-    getter = SentenceGetter(data[:200])
+    getter = SentenceGetter(data)
     sentences = [[word[0] for word in sentence] for sentence in getter.sentences]
     print(sentences[0])
     pos = [[word[2] for word in sentence] for sentence in getter.sentences]
@@ -136,7 +136,7 @@ def main(args):
                                                        output_attentions=False,
                                                        output_hidden_states=False)
 
-    # model.cuda()
+    model.cuda()
 
     FULL_FINETUNING = True
     if FULL_FINETUNING:
