@@ -154,7 +154,7 @@ def main(args):
 
     optimizer = AdamW(optimizer_grouped_parameters, lr=3e-5, eps=1e-8)
 
-    epochs = 3
+    epochs = 20
     max_grad_norm = 1.0
 
     total_steps = len(train_dataloader) * epochs
