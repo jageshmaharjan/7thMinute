@@ -215,6 +215,10 @@ def main(args):
         print("Valid Acc: {}".format(accuracy_score(pred_tags, valid_tags)))
         print("Valid Acc: {}".format(f1_score(pred_tags, valid_tags)))
 
+    import time
+    model_name = "polaris_sentiment_model" + str(time.time()) + ".bin"
+    torch.save(model.state_dict(), model_name)
+
     predict(tokenizer, model, tag_values)
 
 
