@@ -6,3 +6,5 @@ sentiment_analyzer/classifier/__pycache__/
 .idea/
 sentiment_analyzer/__pycache__/*
 sentiment_analyzer/classifier/__pycache__/*
+training/tag2idx.json
+training/tag_values.txt
