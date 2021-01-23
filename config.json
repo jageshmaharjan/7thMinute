@@ -6,6 +6,10 @@
         "neutral",
         "positive"
     ],
-    "MAX_SEQUENCE_LEN": 160
+    "MAX_SEQUENCE_LEN": 160,
+
+    "ER_MODEL": "assets/polaris_ER_model1611354861.0663054.bin",
+    "TAG2IDX": "assets/tag2idx.json",
+    "TAG_VALUES": "assets/tag_values.txt"
 }
 

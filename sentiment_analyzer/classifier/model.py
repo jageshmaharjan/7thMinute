@@ -50,8 +50,8 @@ class Model:
         )
 
 
-model = Model()
+sentiment_model = Model()
 
 
-def get_model():
-    return model
+def get_sentiment_model():
+    return sentiment_model
