@@ -9,10 +9,10 @@ from transformers import BertTokenizer, BertForTokenClassification
 def inference(args):
     PRE_TRAINED_MODEL = 'bert-base-cased'
 
-    with open('/datadisk/7thMinute/training/tag2idx.json', 'r') as f:
+    with open('/home/ubuntu/7thmin/webservice/tag2idx.json', 'r') as f:
         tag2idx = json.load(f)
 
-    with open('/datadisk/7thMinute/training/tag_values.txt', 'r') as f:
+    with open('/home/ubuntu/7thmin/webservice/tag_values.txt', 'r') as f:
         f_read = f.readlines()
 
     tag_values = []
@@ -25,13 +25,13 @@ def inference(args):
                                                        output_attentions=False,
                                                        output_hidden_states=False)
 
-    model.load_state_dict(torch.load('/home/ubuntu/7thmin/webservice/polaris_sentiment_model1611333821.9467418.bin',
+    model.load_state_dict(torch.load('/home/ubuntu/7thmin/webservice/polaris_ER_model1611354861.0663054.bin',
                                      map_location=torch.device("cpu")))
 
     model = model.eval()
 
-    # test_sent = args.sentence
-    test_sent = "President Biden will be inagurating this noon in Pensylvenia avenue, WA at Capitol Hill"
+    test_sent = args.sentence
+    #test_sent = "President Biden will be inagurating this noon in Pensylvenia avenue, WA at Capitol Hill"
     tokenized_sent = tokenizer.encode(test_sent)
     input_ids = torch.tensor([tokenized_sent])
 
