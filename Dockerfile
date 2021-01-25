@@ -6,6 +6,8 @@ RUN pip3 install -r /requirements.txt
 
 COPY . /app
 
+EXPOSE 8000
+
 WORKDIR /app
 
-ENTRYPOINT ["uvicorn", "-b", "0.0.0.0", "main:app"]
+ENTRYPOINT ["uvicorn", "--host", "0.0.0.0", "sentiment_analyzer.api:app", "--reload"]
