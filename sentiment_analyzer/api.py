@@ -36,7 +36,7 @@ async def predict(request: SentimentRequest, model: Model = Depends(get_sentimen
     )
 
 
-@app.post("/entity_recognition", responses=Any)
+@app.post("/entity_recognition")
 async def entity_recognition(request: EntityRequest):  #, model: Model = Depends(get_er_model)
     return "Entity Recognition Coming soon..."
 #     tokens, entity = model.predict(request.text)
@@ -47,4 +47,4 @@ async def entity_recognition(request: EntityRequest):  #, model: Model = Depends
 
 @app.get("/")
 async def main():
-    return {"Greet": "Sentiment Analyzer!"}
+    return {"Task_1": "Sentiment Analyzer!", "Task_2":"Entity Recognition!"}
