@@ -28,8 +28,8 @@ class EntityRecognitionResponse(BaseModel):
     entity: str
 
 
-@app.post("/predict", response_model=SentimentResponse)
-async def predict(request: SentimentRequest, model: Model = Depends(get_sentiment_model)):
+@app.post("/sentiment", response_model=SentimentResponse)
+async def sentiment(request: SentimentRequest, model: Model = Depends(get_sentiment_model)):
     sentiment, confidence, probabilities = model.predict(request.text)
     return SentimentResponse(
         sentiment=sentiment, confidence=confidence, probabilities=probabilities
@@ -47,4 +47,4 @@ async def entity_recognition(request: EntityRequest):  #, model: Model = Depends
 
 @app.get("/")
 async def main():
-    return {"Task_1": "Sentiment Analyzer!", "Task_2":"Entity Recognition!"}
+    return {"Delvify_v.11": "Sentiment Analyzer!", "Delvify_v.12":"Entity Recognition!"}
