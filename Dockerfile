@@ -8,4 +8,4 @@ COPY . /app
 
 WORKDIR /app
 
-ENTRYPOINT ["gunicorn", "-b", "0.0.0.0", "main:app"]
+ENTRYPOINT ["uvicorn", "-b", "0.0.0.0", "main:app"]
