@@ -8,3 +8,4 @@ sentiment_analyzer/__pycache__/*
 sentiment_analyzer/classifier/__pycache__/*
 training/tag2idx.json
 training/tag_values.txt
+sentiment_analyzer/entity_recognition/__pycache__/

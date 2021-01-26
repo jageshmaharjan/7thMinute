@@ -9,10 +9,10 @@ from transformers import BertTokenizer, BertForTokenClassification
 def inference(args):
     PRE_TRAINED_MODEL = 'bert-base-cased'
 
-    with open('/datadisk/7thMinute/training/tag2idx.json', 'r') as f:
+    with open(args.tag2idx, 'r') as f:
         tag2idx = json.load(f)
 
-    with open('/datadisk/7thMinute/training/tag_values.txt', 'r') as f:
+    with open(args.tag_values, 'r') as f:
         f_read = f.readlines()
 
     tag_values = []
@@ -25,13 +25,13 @@ def inference(args):
                                                        output_attentions=False,
                                                        output_hidden_states=False)
 
-    model.load_state_dict(torch.load('/home/ubuntu/7thmin/webservice/polaris_sentiment_model1611333821.9467418.bin',
+    model.load_state_dict(torch.load(args.er_model,
                                      map_location=torch.device("cpu")))
 
     model = model.eval()
 
-    # test_sent = args.sentence
-    test_sent = "President Biden will be inagurating this noon in Pensylvenia avenue, WA at Capitol Hill"
+    test_sent = args.sentence
+    #test_sent = "President Biden will be inagurating this noon in Pensylvenia avenue, WA at Capitol Hill"
     tokenized_sent = tokenizer.encode(test_sent)
     input_ids = torch.tensor([tokenized_sent])
 
@@ -54,7 +54,10 @@ def inference(args):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser("Argument for input sentence")
+    parser = argparse.ArgumentParser("Argument for entity recognition inference")
+    parser.add_argument("--tag2idx", type=str, help="path of tag to id files")
+    parser.add_argument("--tag_values", type=str, help="path to tag values files")
+    parser.add_argument("--er_model", type=str, help="path to entity recognition (er) model")
     parser.add_argument('--sentence', type=str, help="input sentence")
     args = parser.parse_args()
     inference(args)
