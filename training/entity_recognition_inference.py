@@ -9,10 +9,10 @@ from transformers import BertTokenizer, BertForTokenClassification
 def inference(args):
     PRE_TRAINED_MODEL = 'bert-base-cased'
 
-    with open('/home/ubuntu/7thmin/webservice/tag2idx.json', 'r') as f:
+    with open('/home/ubuntu/7thmin/webservice/assets/tag2idx.json', 'r') as f:
         tag2idx = json.load(f)
 
-    with open('/home/ubuntu/7thmin/webservice/tag_values.txt', 'r') as f:
+    with open('/home/ubuntu/7thmin/webservice/assets/tag_values.txt', 'r') as f:
         f_read = f.readlines()
 
     tag_values = []
@@ -25,7 +25,7 @@ def inference(args):
                                                        output_attentions=False,
                                                        output_hidden_states=False)
 
-    model.load_state_dict(torch.load('/home/ubuntu/7thmin/webservice/polaris_ER_model1611354861.0663054.bin',
+    model.load_state_dict(torch.load('/home/ubuntu/7thmin/webservice/assets/polaris_ER_model1611354861.0663054.bin',
                                      map_location=torch.device("cpu")))
 
     model = model.eval()

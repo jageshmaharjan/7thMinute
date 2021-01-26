@@ -102,7 +102,7 @@ def main(args):
 
     MAX_LEN = 92
     BATCH_SIZE = 32
-    PRE_TRAINED_MODEL = 'bert-base-cased'
+    PRE_TRAINED_MODEL = 'bert-base-uncased'
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     if torch.cuda.is_available():
         n_gpu = torch.cuda.device_count()
