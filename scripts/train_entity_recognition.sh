@@ -1,0 +1,1 @@
+python training/polaris_entity_recognition.py --train_file "/datadisk/7thMinute/resources/ner_dataset.csv" --tag_values "/datadisk/7thMinute/egg/tag_values.txt" --tag2idx "/datadisk/7thMinute/egg/tag2idx.json" --er_model "/datadisk/7thMinute/egg"

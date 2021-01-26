@@ -74,12 +74,12 @@ def predict(tokenizer, model, tag_values):
 
 
 def main(args):
-    data = pd.read_csv('/home/ubuntu/7thmin/webservice/resources/ner_dataset.csv',
+    data = pd.read_csv(args.train_file,
                        encoding='latin1').fillna(method='ffill')
 
     print(data.head())
 
-    getter = SentenceGetter(data)
+    getter = SentenceGetter(data[0:10])
     sentences = [[word[0] for word in sentence] for sentence in getter.sentences]
     print(sentences[0])
     pos = [[word[2] for word in sentence] for sentence in getter.sentences]
@@ -91,18 +91,18 @@ def main(args):
     tag_values.append("PAD")
     tag2idx = {t: i for i, t in enumerate(tag_values)}
 
-    with open("tag_values.txt", 'w+') as f_tag_val:
+    with open(args.tag_values, 'w+') as f_tag_val:
         for val in tag_values:
             f_tag_val.write(val + '\n')
     f_tag_val.close()
 
-    with open("tag2idx.json", 'w+') as f_taf2idx:
+    with open(args.tag2idx, 'w+') as f_taf2idx:
         json.dump(tag2idx, f_taf2idx)
     f_taf2idx.close()
 
     MAX_LEN = 92
     BATCH_SIZE = 32
-    PRE_TRAINED_MODEL = 'bert-base-cased'
+    PRE_TRAINED_MODEL = 'bert-base-uncased'
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     if torch.cuda.is_available():
         n_gpu = torch.cuda.device_count()
@@ -169,7 +169,7 @@ def main(args):
 
     optimizer = AdamW(optimizer_grouped_parameters, lr=3e-5, eps=1e-8)
 
-    epochs = 20
+    epochs = 1
     max_grad_norm = 1.0
 
     total_steps = len(train_dataloader) * epochs
@@ -231,7 +231,7 @@ def main(args):
         print("Valid Acc: {}".format(f1_score(pred_tags, valid_tags)))
 
     import time
-    model_name = "polaris_ER_model" + str(time.time()) + ".bin"
+    model_name = args.er_model + "/polaris_ER_model" + str(time.time()) + ".bin"
     torch.save(model.state_dict(), model_name)
 
     predict(tokenizer, model, tag_values)
@@ -239,6 +239,9 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser("Arguments for Entity Recognition")
-    parser.add_argument("--train_file", type=str, help="Training file")
+    parser.add_argument("--train_file", type=str, help="Training file path")
+    parser.add_argument("--tag_values", type=str, help="Save tag values path")
+    parser.add_argument("--tag2idx", type=str, help="Save tag to ids path")
+    parser.add_argument("--er_model", type=str, help="Save entity recognition model path")
     args = parser.parse_args()
     main(args)
