@@ -7,25 +7,26 @@ from transformers import BertTokenizer, BertForTokenClassification
 
 
 def inference(args):
-    PRE_TRAINED_MODEL = 'bert-base-cased'
+    PRE_TRAINED_MODEL = 'bert-base-uncased'
 
-    with open('/home/ubuntu/7thmin/webservice/assets/tag2idx.json', 'r') as f:
+    with open(args.tag2idx, 'r') as f:
         tag2idx = json.load(f)
 
-    with open('/home/ubuntu/7thmin/webservice/assets/tag_values.txt', 'r') as f:
+    with open(args.tag_values, 'r') as f:
         f_read = f.readlines()
 
     tag_values = []
     for val in f_read:
         tag_values.append(val.strip())
 
-    tokenizer = BertTokenizer.from_pretrained(PRE_TRAINED_MODEL, do_lower_case=False)
+    tokenizer = BertTokenizer.from_pretrained(PRE_TRAINED_MODEL, do_lower_case=True)
 
     model = BertForTokenClassification.from_pretrained(PRE_TRAINED_MODEL, num_labels=len(tag2idx),
                                                        output_attentions=False,
                                                        output_hidden_states=False)
 
-    model.load_state_dict(torch.load('/home/ubuntu/7thmin/webservice/assets/polaris_ER_model1611354861.0663054.bin',
+#    model.load_state_dict(torch.load('/home/ubuntu/7thmin/webservice/assets/polaris_ER_model1611354861.0663054.bin',
+    model.load_state_dict(torch.load(args.er_model,
                                      map_location=torch.device("cpu")))
 
     model = model.eval()
@@ -54,7 +55,10 @@ def inference(args):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser("Argument for input sentence")
+    parser = argparse.ArgumentParser("Argument for entity recognition inference")
+    parser.add_argument("--tag2idx", type=str, help="path of tag to id files")
+    parser.add_argument("--tag_values", type=str, help="path to tag values files")
+    parser.add_argument("--er_model", type=str, help="path to entity recognition (er) model")
     parser.add_argument('--sentence', type=str, help="input sentence")
     args = parser.parse_args()
     inference(args)
