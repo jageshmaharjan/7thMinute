@@ -10,6 +10,8 @@
 
     "ER_MODEL": "assets/polaris_ER_model1611354861.0663054.bin",
     "TAG2IDX": "assets/tag2idx.json",
-    "TAG_VALUES": "assets/tag_values.txt"
+    "TAG_VALUES": "assets/tag_values.txt",
+
+    "ER_MAPPER_CSV": "assets/entity_mapper.csv"
 }
 
