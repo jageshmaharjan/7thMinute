@@ -131,7 +131,7 @@ def eval_model(model, data_loader, loss_fn, device, n_examples):
 def main(args):
     RANDOM_SEED = np.random.seed(12345)
     BATCH_SIZE = 16
-    EPOCHS = 5
+    EPOCHS = 100
     MAX_LEN = 160
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
