@@ -79,7 +79,7 @@ def main(args):
 
     print(data.head())
 
-    getter = SentenceGetter(data[0:10])
+    getter = SentenceGetter(data)
     sentences = [[word[0] for word in sentence] for sentence in getter.sentences]
     print(sentences[0])
     pos = [[word[2] for word in sentence] for sentence in getter.sentences]
@@ -169,7 +169,7 @@ def main(args):
 
     optimizer = AdamW(optimizer_grouped_parameters, lr=3e-5, eps=1e-8)
 
-    epochs = 1
+    epochs = 20
     max_grad_norm = 1.0
 
     total_steps = len(train_dataloader) * epochs

@@ -3,3 +3,4 @@ pydantic
 torch
 transformers
 uvicorn
+nltk

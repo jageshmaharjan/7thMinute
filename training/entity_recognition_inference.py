@@ -7,7 +7,7 @@ from transformers import BertTokenizer, BertForTokenClassification
 
 
 def inference(args):
-    PRE_TRAINED_MODEL = 'bert-base-cased'
+    PRE_TRAINED_MODEL = 'bert-base-uncased'
 
     with open(args.tag2idx, 'r') as f:
         tag2idx = json.load(f)
@@ -19,12 +19,13 @@ def inference(args):
     for val in f_read:
         tag_values.append(val.strip())
 
-    tokenizer = BertTokenizer.from_pretrained(PRE_TRAINED_MODEL, do_lower_case=False)
+    tokenizer = BertTokenizer.from_pretrained(PRE_TRAINED_MODEL, do_lower_case=True)
 
     model = BertForTokenClassification.from_pretrained(PRE_TRAINED_MODEL, num_labels=len(tag2idx),
                                                        output_attentions=False,
                                                        output_hidden_states=False)
 
+#    model.load_state_dict(torch.load('/home/ubuntu/7thmin/webservice/assets/polaris_ER_model1611354861.0663054.bin',
     model.load_state_dict(torch.load(args.er_model,
                                      map_location=torch.device("cpu")))
 
