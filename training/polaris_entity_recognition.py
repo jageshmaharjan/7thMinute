@@ -242,6 +242,6 @@ if __name__ == '__main__':
     parser.add_argument("--train_file", type=str, help="Training file path")
     parser.add_argument("--tag_values", type=str, help="Save tag values path")
     parser.add_argument("--tag2idx", type=str, help="Save tag to ids path")
-    parser.add_argument("--er_model", type=str, help="Save entity recognition model path")
+    parser.add_argument("--er_model", type=str, help="Save entity.txt recognition model path")
     args = parser.parse_args()
     main(args)
