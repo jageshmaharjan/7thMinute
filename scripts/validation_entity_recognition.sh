@@ -1,0 +1,1 @@
+python validation/validation_entity_recognition.py --valid_data /datadisk/7thMinute/assets/sample.txt
