@@ -1,4 +1,5 @@
 assets/model_state_dict.bin
+assets/
 .env
 resources/*
 sentiment_analyzer/__pycache__/
