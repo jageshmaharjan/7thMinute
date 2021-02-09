@@ -22,6 +22,7 @@ def get_sentence_sentiment(query):
 #         f.write(res + '\n')
 # f.close()
 
+
 def main(args):
     with open(args.valid_data, "r") as f:
         sentences = f.readlines()
