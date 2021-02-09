@@ -55,10 +55,10 @@ def inference(args):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser("Argument for entity recognition inference")
+    parser = argparse.ArgumentParser("Argument for entity.txt recognition inference")
     parser.add_argument("--tag2idx", type=str, help="path of tag to id files")
     parser.add_argument("--tag_values", type=str, help="path to tag values files")
-    parser.add_argument("--er_model", type=str, help="path to entity recognition (er) model")
+    parser.add_argument("--er_model", type=str, help="path to entity.txt recognition (er) model")
     parser.add_argument('--sentence', type=str, help="input sentence")
     args = parser.parse_args()
     inference(args)
