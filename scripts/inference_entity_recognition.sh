@@ -1,1 +1,0 @@
-python training/entity_recognition_inference.py --tag2idx "/datadisk/7thMinute/assets/tag2idx.json" --tag_values "/datadisk/7thMinute/assets/tag_values.txt"  --er_model "/datadisk/7thMinute/assets/polaris_ER_model1611354861.0663054.bin" --sentence "Bill Gates will be flying from LA, CA to NYC on 25th January, 2021"
