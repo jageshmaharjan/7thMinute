@@ -11,8 +11,8 @@ training/tag2idx.json
 training/tag_values.txt
 sentiment_analyzer/entity_recognition/__pycache__/
 sentiment_analyzer/entity_mapper/__pycache__/
-sentiment_analyzer/entity_mapper/__pycache__/*
 garbage/
+editor/__pycache__/
 *.bin
 *.json
 *.txt

@@ -4,3 +4,8 @@ torch
 transformers
 uvicorn
 nltk
+python-jose
+passlib
+python-dotenv
+python-multipart
+bcrypt

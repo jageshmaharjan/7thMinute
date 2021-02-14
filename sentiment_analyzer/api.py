@@ -15,7 +15,7 @@ from .entity_mapper import mapping_compute
 from utils import deps
 from dotenv import load_dotenv
 from pathlib import Path
-
+import json
 
 app = FastAPI()
 
@@ -103,6 +103,28 @@ async def entity_mapping(request: EntityMappingRequest,
         tokens=str(tokens),
         entity=str(entity)
     )
+
+
+@app.get("/view_entity_mapper")
+async def view_entity_mapper(current_user: deps.User = Depends(deps.get_current_active_user)):
+    config = get_config()
+    er_map_file = config['ER_MAPPER_CSV']
+    with open(er_map_file, 'r') as f:
+        data = f.readlines()
+    return data
+
+
+@app.post("/add_entity_mapper", response_model=EntityMappingResponse)
+async def add_entity_mapper(request: EntityMappingResponse,
+                      current_user: deps.User = Depends(deps.get_current_active_user)):
+    key = request.tokens
+    value = request.entity
+    config = get_config()
+    er_map_file = config['ER_MAPPER_CSV']
+    with open(er_map_file, 'a+') as f:
+        data = str(key) + '\t' + str(value) + '\n'
+        f.write(data)
+    return EntityMappingResponse(tokens=str(key), entity=str(value))
 
 
 @app.post('/er_models')

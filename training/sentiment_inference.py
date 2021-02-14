@@ -3,6 +3,7 @@ from torch import nn
 from transformers import BertModel, BertTokenizer, BertForTokenClassification
 import numpy as np
 
+
 class SentimentClassifier(nn.Module):
     def __init__(self, n_classes):
         super(SentimentClassifier, self).__init__()
