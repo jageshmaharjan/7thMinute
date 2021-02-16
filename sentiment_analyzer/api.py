@@ -109,6 +109,11 @@ async def entity_mapping(request: EntityMappingRequest,
 async def view_entity_mapper(current_user: deps.User = Depends(deps.get_current_active_user)):
     config = get_config()
     er_map_file = config['ER_MAPPER_CSV']
+    data = await read_file(er_map_file)
+    return data
+
+
+async def read_file(er_map_file):
     with open(er_map_file, 'r') as f:
         data = f.readlines()
     return data
@@ -121,11 +126,14 @@ async def add_entity_mapper(request: EntityMappingResponse,
     value = request.entity
     config = get_config()
     er_map_file = config['ER_MAPPER_CSV']
+    content_write = await write_file(er_map_file, key, value)
+    return EntityMappingResponse(tokens=str(key), entity=str(value))
+
+
+async def write_file(er_map_file, key, value):
     with open(er_map_file, 'a+') as f:
         data = str(key) + '\t' + str(value) + '\n'
         f.write(data)
-    return EntityMappingResponse(tokens=str(key), entity=str(value))
-
 
 @app.post('/er_models')
 async def select_er_models(current_user: deps.User = Depends(deps.get_current_active_user)):
