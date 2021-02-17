@@ -1,5 +1,4 @@
-# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+# This is a basic workflow to help you get started with Actions
 
 name: CI
 
@@ -14,21 +13,26 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
+  # This workflow contains a single job called "build"
   build:
+    # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
+    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      - name: This is a build for polaris(7thMinute Project)
-        run: echo Building starting for Polaris - 7thMinute Project
+      # Runs a single command using the runners shell
+      - name: Run a one-line script
+        run: echo Hello, ONE Project!
 
-      - name: Check out Repo
-        run: actions/checkout@v2
+      - name: Check Out Repo
+        uses: actions/checkout@v2
 
-      - name: Configure AWS Credentials
+      - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -40,7 +44,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Build, tag, and push image to Amazon ECR Backend
-        id: build-image_polaris
+        id: build-image_backend
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: githubactions
@@ -49,11 +53,65 @@ jobs:
           # Build a docker container and
           # push it to ECR so that it can
           # be deployed to ECS.
-          docker build -t 029086201010.dkr.ecr.ap-southeast-1.amazonaws.com/polaris:latest .
+          docker build -t 029086201010.dkr.ecr.ap-southeast-1.amazonaws.com/polaris:latest ./
           docker push 029086201010.dkr.ecr.ap-southeast-1.amazonaws.com/polaris:latest
           echo "::set-output name=image::029086201010.dkr.ecr.ap-southeast-1.amazonaws.com/polaris:latest"
 
-      - name: Build completed
+
+#       - name: Amazon ECS task definition
+#         id: task-def
+#         uses: aws-actions/amazon-ecs-render-task-definition@v1
+#         with:
+#           task-definition: mytaskdef.json
+#           container-name: sample-app
+#           image: ${{ steps.build-image.outputs.image }}
+
+#       - name: Deploy Amazon ECS task definition
+#         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+#         with:
+#           task-definition: ${{ steps.task-def.outputs.task-definition }}
+#           service: delvify_service_one
+#           cluster: sample-app
+#           wait-for-service-stability: true
+
+
+### Commented because we don't require to use docker, we shall use aws-ecr instead ####
+#      - name: Set up QEMU
+#        uses: docker/setup-qemu-action@v1
+
+#      - name: Set up Docker Buildx
+#        uses: docker/setup-buildx-action@v1
+
+#      - name: Login to Docker Hub
+#        uses: docker/login-action@v1
+#        with:
+#          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+#          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+#      - name: Build and push backend_pub
+#        id: docker_build_backend
+#        uses: docker/build-push-action@v2
+#        with:
+#          context: ./
+#          file: ./backend/Dockerfile
+#          push: true
+#          tags: delvifyhk/one_backend:latest
+
+#      - name: Build and push frontend_pub
+#        id: docker_build_frontend
+#        uses: docker/build-push-action@v2
+#        with:
+#          context: ./frontend/.
+#          file: ./frontend/Dockerfile
+#          push: true
+#          tags: delvifyhk/one_frontend:latest
+
+#     - name: Image digest
+#       run: echo ${{ steps.docker_build.outputs.digest }}
+###### Comment ends here ###########
+
+      # Runs a set of commands using the runners shell
+      - name: Run a multi-line script
         run: |
-          echo Build has been completed for polaris,
-          echo test, and deploy your project.
+          echo Add other actions to build,
+          echo test, and deploy your project, and deploy.
