@@ -52,6 +52,6 @@ jobs:
         echo "::set-output name=image::029086201010.dkr.ecr.ap-southeast-1.amazonaws.com/polaris:latest"
 
     - name: Build completed
-        run: |
-          echo Build has been completed for polaris,
-          echo test, and deploy your project.
+      run: |
+        echo Build has been completed for polaris,
+        echo test, and deploy your project.
