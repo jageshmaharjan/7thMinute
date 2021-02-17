@@ -1,22 +1,25 @@
 # This workflow will install Python dependencies, run tests and lint with a variety of Python versions
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
-name: Dobby CI
+name: CI
 
+# Controls when the action will run.
 on:
+  # Triggers the workflow on push or pull request events but only for the master branch
   push:
     branches: [ master ]
   pull_request:
     branches: [ master ]
 
+  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
       - name: This is a build for polaris(7thMinute Project)
@@ -46,7 +49,7 @@ jobs:
           # Build a docker container and
           # push it to ECR so that it can
           # be deployed to ECS.
-          docker build -t 029086201010.dkr.ecr.ap-southeast-1.amazonaws.com/polaris:latest
+          docker build -t 029086201010.dkr.ecr.ap-southeast-1.amazonaws.com/polaris:latest .
           docker push 029086201010.dkr.ecr.ap-southeast-1.amazonaws.com/polaris:latest
           echo "::set-output name=image::029086201010.dkr.ecr.ap-southeast-1.amazonaws.com/polaris:latest"
 
