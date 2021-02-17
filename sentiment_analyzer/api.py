@@ -29,14 +29,26 @@ app.add_middleware(
 
 
 class SentimentRequest(BaseModel):
+    '''
+    schema for sentiment request to model
+    takes in string parameter
+    '''
     text: str
 
 
 class EntityRequest(BaseModel):
+    '''
+    Schema for Entity finding in a input query from user
+    Takes in a string parameter
+    '''
     text: str
 
 
 class EntityMappingRequest(BaseModel):
+    '''
+    Schema for Entity finding in a input query from user.
+    Takes in a string parameter
+    '''
     text: str
 
 
@@ -134,6 +146,36 @@ async def write_file(er_map_file, key, value):
     with open(er_map_file, 'a+') as f:
         data = str(key) + '\t' + str(value) + '\n'
         f.write(data)
+
+
+@app.delete("/delete_er_mapper", response_model=str)
+async def delete_entity_mapper(request: EntityMappingResponse,
+                               current_user: deps.User = Depends(deps.get_current_active_user)):
+    key = request.tokens
+    value = request.entity
+    delete_line = key + '\t' + value + '\n'
+    config = get_config()
+    er_map_file = config["ER_MAPPER_CSV"]
+    er_data = await delete_content_file(er_map_file, delete_line)
+    if er_data:
+        return f"{key} : {value}, have been removed"
+    else:
+        return f"{key} : {value}, not Found!"
+
+
+async def delete_content_file(er_map_file, delete_line):
+    found = False
+    with open(er_map_file, 'r+') as f:
+        data = f.readlines()
+        f.seek(0)
+        for line in data:
+            if line != delete_line:
+                f.write(line)
+            elif line == delete_line:
+                found = True
+        f.truncate()
+    return found
+
 
 @app.post('/er_models')
 async def select_er_models(current_user: deps.User = Depends(deps.get_current_active_user)):
