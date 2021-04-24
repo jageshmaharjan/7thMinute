@@ -1,38 +1,106 @@
-# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
-
-name: Python package
+name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
+
+  workflow_dispatch:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-    #strategy:
-    #  matrix:
-    #    python-version: ['3.5', '3.6', '3.7', '3.8']
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python 3.8
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.8
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install flake8 pytest
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    - name: Lint with flake8
-      run: |
-        # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    #- name: python code run
-    #  run: uvicorn sentiment_analyzer.api:app --reload 
+      - uses: actions/checkout@v2
+
+      - name: Run a one-line script to Say Hi for Polaris-7thMinute
+        run: echo Hello, Polaris Project!
+
+      - name: Check Out Repo
+        uses: actions/checkout@v2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-southeast-1
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, tag, and push image to Amazon ECR Backend
+        id: build-image_backend
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: githubactions
+          IMAGE_TAG: latest
+        run: |
+          # Build a docker container and
+          # push it to ECR so that it can
+          # be deployed to ECS.
+          docker build -t 029086201010.dkr.ecr.ap-southeast-1.amazonaws.com/polaris:latest ./
+          docker push 029086201010.dkr.ecr.ap-southeast-1.amazonaws.com/polaris:latest
+          echo "::set-output name=image::029086201010.dkr.ecr.ap-southeast-1.amazonaws.com/polaris:latest"
+
+
+#       - name: Amazon ECS task definition
+#         id: task-def
+#         uses: aws-actions/amazon-ecs-render-task-definition@v1
+#         with:
+#           task-definition: mytaskdef.json
+#           container-name: sample-app
+#           image: ${{ steps.build-image.outputs.image }}
+
+#       - name: Deploy Amazon ECS task definition
+#         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+#         with:
+#           task-definition: ${{ steps.task-def.outputs.task-definition }}
+#           service: delvify_service_one
+#           cluster: sample-app
+#           wait-for-service-stability: true
+
+
+### Commented because we don't require to use docker, we shall use aws-ecr instead ####
+#      - name: Set up QEMU
+#        uses: docker/setup-qemu-action@v1
+
+#      - name: Set up Docker Buildx
+#        uses: docker/setup-buildx-action@v1
+
+#      - name: Login to Docker Hub
+#        uses: docker/login-action@v1
+#        with:
+#          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+#          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+#      - name: Build and push backend_pub
+#        id: docker_build_backend
+#        uses: docker/build-push-action@v2
+#        with:
+#          context: ./
+#          file: ./backend/Dockerfile
+#          push: true
+#          tags: delvifyhk/one_backend:latest
+
+#      - name: Build and push frontend_pub
+#        id: docker_build_frontend
+#        uses: docker/build-push-action@v2
+#        with:
+#          context: ./frontend/.
+#          file: ./frontend/Dockerfile
+#          push: true
+#          tags: delvifyhk/one_frontend:latest
+
+#     - name: Image digest
+#       run: echo ${{ steps.docker_build.outputs.digest }}
+###### Comment ends here ###########
+
+      # Runs a set of commands using the runners shell
+      - name: Run a multi-line script - complete building
+        run: |
+          echo Add other actions to build for Polaris,
+          echo test, and deploy your project, and deploy the polaris Application.
