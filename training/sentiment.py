@@ -30,12 +30,12 @@ from bert.tokenization.bert_tokenization import FullTokenizer
 
 
 class SentimentClassifier:
-    DATA_COLUMN = "content"
+    DATA_COLUMN = "text"
     LABEL_COLUMN = "sentiment"
 
-    def __init__(self, train, test, tokenizer: FullTokenizer, classes, max_seq_len=192):
+    def __init__(self, train, test, tokenizer: FullTokenizer, classes, max_seq_len=128):
         self.tokenizer = tokenizer
-        self.max_seq_len = max_seq_len
+        self.max_seq_len = 0
         self.classes = classes
         ((self.train_x, self.train_y), (self.test_x, self.test_y)) = map(self._prepare, [train, test])
         self.max_seq_len = min(self.max_seq_len, max_seq_len)
@@ -72,8 +72,6 @@ def create_model(max_seq_len, bert_ckpt_file, bert_config_file, classes):
 
     input_ids = tf.keras.layers.Input(shape=(max_seq_len, ), dtype='int32', name='input_ids')
     bert_output = bert(input_ids)
-
-    print("bert_shape", bert_output.shape)
 
     cls_out = tf.keras.layers.Lambda(lambda seq: seq[:, 0, :])(bert_output)
     cls_out = tf.keras.layers.Dropout(0.5)(cls_out)
@@ -135,11 +133,20 @@ def data_preprocessing(df, class_names):
     return df_train, df_test
 
 
+def check_data_balance(train):
+    chart = sns.countplot(train.sentiment)
+    plt.title("Sentiment")
+    chart.set_xticklabels(chart.get_xticklabels(), rotation=30, horizontalalignment='right')
+    plt.show()
+
 def main(args):
     class_names = ["negative", "neutral", "positive"]
 
-    df = pd.read_csv(args.train_csv)  # "/datadisk/BertIntentDetection/dataset/sentiment/reviews.csv"
-    df_train, df_test = data_preprocessing(df, class_names)
+    train = pd.read_csv(args.train_csv)  # "/datadisk/7thMinute/resources/sentiment/train.csv"
+    test = pd.read_csv(args.test_csv)
+    # df_train, df_test = data_preprocessing(df, class_names)
+
+    # check_data_balance(train)
 
     bert_ckpt_dir = args.bert_dir  # '/home/jugs/Desktop/BERT-Pretrained/uncased_L-12_H-768_A-12/1'
     bert_ckpt_file = os.path.join(bert_ckpt_dir, 'bert_model.ckpt')
@@ -153,10 +160,10 @@ def main(args):
     token_id = tokenizer.convert_tokens_to_ids(tokens)
     print(token_id)
 
-    classes = df_train.sentiment.unique().tolist()
+    classes = train.sentiment.unique().tolist()
     print(classes)
 
-    data = SentimentClassifier(df_train, df_test, tokenizer, classes, max_seq_len=128)
+    data = SentimentClassifier(train, test, tokenizer, classes, max_seq_len=128)
 
     print(data.train_x.shape)
 
@@ -208,8 +215,9 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Arguments for training the Sentiment Classifier using BERT")
-    parser.add_argument('--train_csv', type=str, help="training data file")  # "/datadisk/BertIntentDetection/dataset/sentiment/reviews.csv"
-    # parser.add_argument('--test_csv', type=str, help="training data file")   # "/datadisk/BertIntentDetection/dataset/sentiment/apps.csv"
+    parser.add_argument('--train_csv', type=str, help="training data file")  # "/datadisk/sentiment/reviews.csv"
+    parser.add_argument('--test_csv', type=str, help="training data file")  # "/datadisk/sentiment/reviews.csv"
+
     parser.add_argument('--bert_dir', type=str, help="file path to BERT dir")
 
     args = parser.parse_args()
